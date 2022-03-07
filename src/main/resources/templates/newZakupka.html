@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Syrie</title>
+</head>
+<body>
+
+<form th:method="POST" th:action="@{/zakupkaSyria}" th:object="${zakupka}">
+<label for ="id">Enter id:</label>
+<input type="text" th:field="*{id}" id="id"/>
+</br>
+    <label for="fio">Enter Data: </label>
+    <input type="text" th:field="*{date}" id="fio"/>
+    <br/>
+    <label for="adres">Enter Kolvo:</label>
+    <input type="text" th:field="*{kolvo}" id="adres"/>
+    </br>  
+     <label for="oklad">Enter summa:</label>
+    <input type="text" th:field="*{summa}" id="oklad"/>
+    </br>
+    <label for="edin">Enter Sotrudnik:</label>
+      <select id="edin" th:field="*{sotrudnik}">
+            <option th:each="user : ${sotrudnik}"
+                    th:text="${user.getFio()}"
+                    th:value="${user.getId()}">
+        </select>
+    </br>
+     <label for="edin2">Enter Syrie:</label>
+    <select id="edin2" th:field="*{syrie}">
+            <option th:each="user : ${syrie}"
+                    th:text="${user.getName()}"
+                    th:value="${user.getId()}">
+        </select>
+    </br>
+    <input type="submit" value="Create!"/>
+</form>
+</body>
+</html>

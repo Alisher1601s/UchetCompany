@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Product</title>
+</head>
+<body>
+
+<form th:method="PATCH" th:action="@{/products/{id}(id=${product.getId()})}" th:object="${product}">
+<label for ="id">Enter id:</label>
+<input type="text" th:field="*{id}" id="id"/>
+</br>
+    <label for="fio">Enter kolvo: </label>
+    <input type="text" th:field="*{kolvo}" id="fio"/>
+    <br/>
+    <label for="adres">Enter name:</label>
+    <input type="text" th:field="*{name}" id="adres"/>
+    </br>  
+     <label for="oklad">Enter summa:</label>
+    <input type="text" th:field="*{summa}" id="oklad"/>
+    </br>
+  <label for="edin">Enter edinica:</label>
+    <select id="edin" th:field="*{edinica}">
+            <option th:each="user : ${edinica}"
+                    th:text="${user.getName()}"
+                    th:value="${user.getId()}">
+        </select>
+    </br>
+    <input type="submit" value="Update!"/>
+</form>
+</body>
+</html>

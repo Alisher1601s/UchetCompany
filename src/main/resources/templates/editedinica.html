@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New edinica</title>
+</head>
+<body>
+
+<form th:method="PATCH" th:action="@{/edinicaizmereniyas/{id}(id=${edinica.getId()})}" th:object="${edinica}">
+<label for ="id">Enter id:</label>
+<input type="text" th:field="*{id}" id="id"/>
+</br>
+    <label for="edin">Enter edinica: </label>
+    <input type="text" th:field="*{name}" id="edin"/>
+    <br/>
+    <input type="submit" value="Update!"/>
+</form>
+</body>
+</html>

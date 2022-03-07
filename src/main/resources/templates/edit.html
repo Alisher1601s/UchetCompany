@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org" >
+<head>
+<meta charset="UTF-8"/>
+<title> Update budget</title>
+</head>
+<body>
+<form th:method="PATCH" th:action="@{/budget/{id}(id=${budgets.getId()})}" th:object="${budgets}">
+<label for ="id">Enter id:</label>
+<input type="text" th:field="*{id}" id="id"/>
+</br>
+    <label for="budget">Enter budget: </label>
+    <input type="text" th:field="*{budget}" id="budget"/>
+    <br/>
+    <input type="submit" value="Update!"/>
+</form>
+</body>
+</html>
