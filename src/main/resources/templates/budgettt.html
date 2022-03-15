@@ -39,11 +39,13 @@ color: #8D8173;
 			<tr>
 				<th>id</th>
 				<th>Сумма бюджета</th>
+					<th>Прибыль в процентах</th>
 			</tr>
 			<div th:each="budget : ${budgets}">
 			<tr>
 				<td><a th:href="@{/budget/{id}(id=${budget.getId()})}" th:text="${budget.getId()}">user</a></td>
 				<td><a th:href="@{/budget/{id}(id=${budget.getId()})}" th:text="${budget.getBudget()}">user</a></td>
+					<td><a th:href="@{/budget/{id}(id=${budget.getId()})}" th:text="${budget.getPercent()}">user</a></td>
 			</tr>
 			</div>
 		</table>

@@ -12,7 +12,9 @@ public class Budget {
 @Id
 @GeneratedValue(strategy=GenerationType.AUTO)
 private int id;
-private int budget;
+private double budget;
+
+private double percent;
 public int getId()
 {
 	return id;
@@ -21,11 +23,17 @@ public void setId(int id)
 {
 	this.id=id;
 }
-public int getBudget() {
+public double getBudget() {
 	return budget;
 }
-public void setBudget(int budget) {
-	this.budget = budget;
+public void setBudget(double tsk) {
+	this.budget = tsk;
+}
+public double getPercent() {
+	return percent;
+}
+public void setPercent(double percent) {
+	this.percent = percent;
 }
 
 }

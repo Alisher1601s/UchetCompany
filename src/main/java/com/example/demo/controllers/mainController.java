@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -160,6 +161,7 @@ public String getIngr(Model model)
 	return "Ingred";
 }
 @GetMapping("/doljnosti")
+@PreAuthorize("hasAuthority('doljnost:read')")
 public String getDoljnosti(Model model)
 {
 	model.addAttribute("doljn",dolg.findAll());
@@ -172,6 +174,7 @@ public String getNewDOljnost(@ModelAttribute("doljnost") Doljnost dolg)
 	return "newdolgii";
 }
 @PostMapping("/doljnosti")
+@PreAuthorize("hasAuthority('doljnost:write')")
 public String getDoljnostii(@ModelAttribute("doljnost") Doljnost dolgs)
 {
 	this.dolg.save(dolgs);

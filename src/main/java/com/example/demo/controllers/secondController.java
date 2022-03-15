@@ -1,8 +1,15 @@
 package com.example.demo.controllers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
+import com.example.demo.models.ProdajaProdukcii;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,11 +18,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.models.Budget;
 import com.example.demo.models.Doljnost;
 import com.example.demo.models.Ingredients;
 import com.example.demo.models.Product;
+import com.example.demo.models.Production;
 import com.example.demo.models.Sotrudnik;
 import com.example.demo.models.Syrie;
 import com.example.demo.models.ZakupkaSyria;
@@ -23,7 +32,9 @@ import com.example.demo.models.edinica;
 import com.example.demo.repos.BudgetRepos;
 import com.example.demo.repos.DoljnostRepo;
 import com.example.demo.repos.IngredientsRepo;
+import com.example.demo.repos.ProdajaProdRepo;
 import com.example.demo.repos.ProductRepo;
+import com.example.demo.repos.ProductionRepo;
 import com.example.demo.repos.SotrudnikRepo;
 import com.example.demo.repos.SyrieRepo;
 import com.example.demo.repos.ZakupkaRepos;
@@ -34,6 +45,8 @@ import net.bytebuddy.asm.Advice.This;
 @Controller
 public class secondController {
 
+	@Autowired
+	private ProdajaProdRepo prodajaprodukcii;
 	@Autowired
 	private IngredientsRepo IngredRepo;
 	@Autowired
@@ -51,7 +64,8 @@ public class secondController {
 	private edinicaRepo edrepo;
 	@Autowired
 	private DoljnostRepo dolg;
-	
+	@Autowired
+	private ProductionRepo productionRepo;
 	@GetMapping("/doljnosti/{id}")
 	public String getDoljnid(@PathVariable("id") int id,Model model)
 	{
@@ -231,6 +245,41 @@ public class secondController {
 		return "zakupkasyr";
 		
 	}
+	@GetMapping("/ProdajaProdukcii/new")
+	public String getProdaja(@ModelAttribute("prodajaprodukcii") ProdajaProdukcii prod,Model model)
+	{
+		model.addAttribute("sotrudnik",this.sotrrepo.findAll());
+		model.addAttribute("products",this.prodrepo.findAll());
+		model.addAttribute("chislo",0);
+		return "newProdajaProdukcii";
+	}
+	@PostMapping("/ProdajaProdukcii")
+	public String addProductProdaja(@ModelAttribute("prodajaprodukcii") ProdajaProdukcii prod)
+	{
+		
+		Product pr=this.prodrepo.findById(prod.getProduct().getId()).get();
+		if(prod.getKolvo()<=pr.getKolvo())
+		{
+			double seb= (pr.getSumma()/pr.getKolvo());
+			Budget t=this.budgetrepos.findById(1).get();
+		//	double tsk=100-(((((double)pr.getSumma()/pr.getKolvo())*prod.getKolvo())/prod.getSumma())*100);
+			double tsk=((seb*prod.getKolvo())/100)*t.getPercent()+seb*prod.getKolvo();
+			prod.setSumma(tsk);
+			t.setBudget(t.getBudget()+tsk);
+			
+			this.budgetrepos.save(t);
+			pr.setKolvo(pr.getKolvo()-prod.getKolvo());
+			pr.setSumma(pr.getSumma()-seb*prod.getKolvo());
+			this.prodrepo.save(pr);
+			this.prodajaprodukcii.save(prod);
+		}
+		else
+		{
+		return "err";
+		}
+		
+		return "redirect:/ProdajaProdukcii";
+	}
 	@GetMapping("/zakupkaSyria/new")
 	public String getSyrie(@ModelAttribute("zakupka") ZakupkaSyria zp,Model model)
 	{
@@ -258,7 +307,7 @@ public class secondController {
 		else
 		{
 
-		System.out.println("SDSA");
+		return "err";
 		}
 		
 		return "redirect:/zakupkaSyria";
@@ -282,12 +331,12 @@ public class secondController {
 		return "redirect:/Sotrudniki";
 	}
 	@DeleteMapping("/doljnosti/{id}")
+	@PreAuthorize("hasAuthority('doljnost:write')")
 	public String delDolj(@PathVariable("id") int id)
 	{
 		this.dolg.deleteById(id);
 		return "redirect:/doljnosti";
 	}
-
 	@DeleteMapping("/edinicaizmereniyas/{id}")
 	@Transactional
 	public String delEd(@PathVariable("id") int id)
@@ -307,5 +356,115 @@ public class secondController {
 		this.IngredRepo.deleteById(id);
 		return "redirect:/Ingrediients";
 	}
+	@GetMapping("/ProdajaProdukcii")
+	public String showSellProducts(Model model)
+	{
+		model.addAttribute("prodajaproducts",this.prodajaprodukcii.findAll());
+		return "prodajaprod";
+	}
+	@GetMapping("/filter")
+	public String showFilter(Model model,@ModelAttribute("budgets") Ingredients prod)
+	{
 	
+		
+		model.addAttribute("product",this.prodrepo.findAll());
+		return "filter";
+	}
+	
+	@GetMapping("/filter/{id}")
+	public String showListSyrie(@ModelAttribute("budgets") Ingredients prod,Model model)
+	{
+		List<Syrie>syrie=new ArrayList<Syrie>();
+		boolean flag=false;
+		List<Ingredients> list=this.IngredRepo.findAll();
+		for(int i=0;i!=list.size();++i)
+		{
+		if(list.get(i).getProduct().getId()==prod.getProduct().getId())
+		{
+			syrie.add(list.get(i).getSyrie());
+			flag=true;
+		}
+		}
+		model.addAttribute("syries",syrie);
+		if(flag==false)
+			model.addAttribute("flag",flag);
+		return "filter2";
+	}
+	@GetMapping("/production")
+	public String showProductionList(Model model)
+	{
+		model.addAttribute("production",this.productionRepo.findAll());
+		return "production";
+	}
+	@GetMapping("/production/new")
+	public String addProduction(@ModelAttribute("production") Production production,Model model)
+	{
+	
+		model.addAttribute("sotrudnik",this.sotrrepo.findAll());
+		model.addAttribute("products",this.prodrepo.findAll());
+		return "newProduction";
+	}
+	@PostMapping("/production")
+	public String addProduct(@ModelAttribute("production") Production production)
+	{
+		
+		List<Ingredients>ingredients=this.IngredRepo.findAll();
+		List<Ingredients>ingredients2=new ArrayList<Ingredients>();
+		for(int i=0;i!=ingredients.size();++i)
+		{
+			if(ingredients.get(i).getProduct().getId()==production.getProduct().getId())
+			{
+				ingredients2.add(ingredients.get(i));
+			}
+		}
+		List<Syrie>syrie=this.syrierepo.findAll();
+		List<Syrie>syrie2=new ArrayList<Syrie>();
+		Collections.sort(ingredients2);
+		Collections.sort(syrie);
+		for(int i=0;i!=ingredients2.size();++i)
+		{
+			System.out.println(ingredients2.get(i).getSyrie().getId());
+		}
+		for(int i=0;i!=syrie.size();++i)
+		{
+			if(syrie.get(i).getId()==ingredients2.get(i).getSyrie().getId())
+			{
+				syrie2.add(syrie.get(i));
+			}
+		}
+		
+		double sum=0;
+		for(int i=0;i!=syrie2.size();++i)
+		{
+			if(syrie2.get(i).getId()==ingredients2.get(i).getSyrie().getId())
+			{
+				if(ingredients2.get(i).getKolvo()>syrie2.get(i).getKolvo())
+				{
+					return "err";
+				}
+				double sebes=(double) (syrie.get(i).getSumma()/syrie.get(i).getKolvo());
+				System.out.println("SEBESTOIMOST" + sebes);
+				double countofsyrie=ingredients2.get(i).getKolvo()*production.getKolvo();
+				double summaofsyrie=sebes*production.getKolvo()*ingredients2.get(i).getKolvo();
+				sum+=summaofsyrie;
+				System.out.println("Count OF NUJNOGO SYRIA " +countofsyrie);
+				System.out.println("SUMMA SYRIA " + summaofsyrie);
+				
+				syrie.get(i).setSumma(syrie.get(i).getSumma()-summaofsyrie);
+
+				syrie.get(i).setKolvo(syrie.get(i).getKolvo()-countofsyrie);
+				this.syrierepo.save(syrie.get(i));
+		
+				
+			}
+		}
+		Product product=this.prodrepo.findById(production.getProduct().getId()).get();
+		System.out.println("SUM " + sum);
+		product.setSumma(product.getSumma()+sum);
+		product.setKolvo(product.getKolvo()+production.getKolvo());
+		this.prodrepo.save(product);
+		this.productionRepo.save(production);
+		return "redirect:/production";
+		
+	}
 }

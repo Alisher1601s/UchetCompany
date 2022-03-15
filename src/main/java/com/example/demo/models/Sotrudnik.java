@@ -19,11 +19,31 @@ private String fio;
 private int oklad;
 private String adres;
 private String phone;
+@OneToMany(mappedBy="sotrudnik")
+private List<ProdajaProdukcii>sotrudnik;
+public List<ProdajaProdukcii> getsotrudnik()
+{
+	return sotrudnik;
+}
+public void setProdajaProducts(List<ProdajaProdukcii> t)
+{
+	this.sotrudnik=t;
+}
 @OneToMany
 private List<ZakupkaSyria> zakupkasyriya;
 public void setZakupkaSyria(List<ZakupkaSyria>l)
 {
 	this.zakupkasyriya=l;
+}
+@OneToMany(mappedBy="sotrudnik")
+private List<Production>productionList;
+public void setListProduction(List<Production>l)
+{
+	this.productionList=l;
+}
+public List<Production>getListProduction()
+{
+	return this.productionList;
 }
 public List<ZakupkaSyria>getZakupkaSyria()
 {

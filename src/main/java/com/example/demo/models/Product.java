@@ -16,8 +16,28 @@ public class Product {
 @GeneratedValue(strategy=GenerationType.AUTO)
 private int id;
 private String name;
-private int summa;
+private double summa;
 private int kolvo;
+@OneToMany(mappedBy="product")
+private List<ProdajaProdukcii>products;
+public List<ProdajaProdukcii> getProducts()
+{
+	return products;
+}
+public void setProdajaProducts(List<ProdajaProdukcii> t)
+{
+	this.products=t;
+}
+@OneToMany(mappedBy="product")
+private List<Production>productionList;
+public void setListProduction(List<Production>l)
+{
+	this.productionList=l;
+}
+public List<Production>getListProduction()
+{
+	return this.productionList;
+}
 @OneToMany
 @JoinColumn(name="productid")
 private List<Ingredients>ingred;
@@ -48,11 +68,11 @@ public String getName() {
 public void setName(String name) {
 	this.name = name;
 }
-public int getSumma() {
+public double getSumma() {
 	return summa;
 }
-public void setSumma(int summa) {
-	this.summa = summa;
+public void setSumma(double d) {
+	this.summa = d;
 }
 public int getKolvo() {
 	return kolvo;

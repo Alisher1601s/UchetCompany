@@ -2,11 +2,11 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>New Syrie</title>
+    <title>Произвести продукцию</title>
 </head>
 <body>
 
-<form th:method="POST" th:action="@{/zakupkaSyria}" th:object="${zakupka}">
+<form th:method="POST" th:action="@{/production}" th:object="${production}">
     <label for="fio">Enter Data: </label>
     <input type="text" th:field="*{date}" id="fio"/>
     <br/>
@@ -23,9 +23,9 @@
                     th:value="${user.getId()}">
         </select>
     </br>
-     <label for="edin2">Enter Syrie:</label>
-    <select id="edin2" th:field="*{syrie}">
-            <option th:each="user : ${syrie}"
+     <label for="edin2">Enter Product:</label>
+    <select id="edin2" th:field="*{product}">
+            <option th:each="user : ${products}"
                     th:text="${user.getName()}"
                     th:value="${user.getId()}">
         </select>

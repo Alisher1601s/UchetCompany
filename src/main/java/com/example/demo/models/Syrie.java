@@ -11,13 +11,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
-public class Syrie {
+public class Syrie implements Comparable<Syrie> {
 @Id
 @GeneratedValue(strategy=GenerationType.AUTO)
 private int id;
 private String name;
-private int summa;
-private int kolvo;
+private double summa;
+private double kolvo;
 @OneToMany
 private List<ZakupkaSyria> zakupkasyriya;
 public void setZakupkaSyria(List<ZakupkaSyria>l)
@@ -51,17 +51,17 @@ public void setIngredients(List<Ingredients>ll)
 {
 this.ingred=ll;	
 }
-public int getSumma() {
+public double getSumma() {
 	return summa;
 }
-public void setSumma(int summa) {
-	this.summa = summa;
+public void setSumma(double d) {
+	this.summa = d;
 }
-public int getKolvo() {
+public double getKolvo() {
 	return kolvo;
 }
-public void setKolvo(int kolvo) {
-	this.kolvo = kolvo;
+public void setKolvo(double d) {
+	this.kolvo = d;
 }
 public String getName() {
 	return name;
@@ -76,5 +76,10 @@ public int getId()
 public void setId(int id)
 {
 	this.id=id;
+}
+@Override
+public int compareTo(Syrie o) {
+	// TODO Auto-generated method stub
+	return Integer.compare(id, o.id);
 }
 }

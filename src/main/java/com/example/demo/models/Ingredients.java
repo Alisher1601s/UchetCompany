@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Ingredients {
+public class Ingredients  implements Comparable<Ingredients>{
 @Id
 @GeneratedValue(strategy=GenerationType.AUTO)
 private int id;
@@ -48,5 +48,10 @@ public void setId(int id)
 public int getId()
 {
 	return id;
+}
+@Override
+public int compareTo(Ingredients o) {
+	// TODO Auto-generated method stub
+	return Integer.compare(this.syrie.getId(), o.getSyrie().getId());
 }
 }
